@@ -402,7 +402,7 @@
 <body>
 
     <div class="container">
-        <h1>BANI Manufacturing & Inventory System</h1>
+        <h1>Advanced Manufacturing & Inventory System</h1>
 
         <div class="tabs">
             <button class="tab-link active" id="home-tab">Home</button>
@@ -464,6 +464,20 @@
                 <h3>Progress for SKU: <span id="visualization-sku-title"></span></h3>
                 <div style="max-height: 400px;">
                     <canvas id="challanProgressChart"></canvas>
+                </div>
+                <h4 style="margin-top: 20px;">Challan Details</h4>
+                <div class="table-container" style="max-height: 200px;">
+                    <table id="challanDetailsTable">
+                        <thead>
+                            <tr>
+                                <th>Challan No</th>
+                                <th>Quantity</th>
+                                <th>Current Stage</th>
+                                <th>Vendor</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -650,7 +664,7 @@
     <div id="skuModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="modal-title-sku"><i class="fas fa-chart-line"></i> SKU Manufacturing Progress</h2>
+                <h2>SKU: <span id="modal-title-sku"></span></h2>
                 <button class="close-button" id="close-sku-modal">&times;</button>
             </div>
             <div class="modal-body">
@@ -1071,33 +1085,64 @@
             }
             const sku = document.getElementById('sku').value;
             const color = document.getElementById('color').value;
-            if (materials.some(m => m.data.sku === sku && m.data.color === color)) {
-                alert('This SKU and Color combination already exists.');
-                return;
-            }
-            const challanData = {
-                challanNo: document.getElementById('challanNo').value,
-                vendor: document.getElementById('outputVendor').value,
-                stage: STAGES[0],
-                quantities: quantities,
-                date: new Date().toISOString()
-            };
-            const newMaterial = {
-                sku,
-                type: itemType,
-                color,
-                rate: parseFloat(document.getElementById('rate').value),
-                initialQuantities: { ...quantities },
-                receivedQuantities: {},
-                challans: [challanData]
-            };
-            if (await addMaterial(newMaterial)) {
-                this.reset();
-                document.getElementById('size-quantity-container').innerHTML = '';
-                DEFAULT_SIZES.forEach(s => createSizeInputField(s, 'size-quantity-container'));
-                document.getElementById('total-qty-display').textContent = `Total Quantity: 0`;
-                openTab({ currentTarget: document.getElementById('home-tab') }, 'Home');
-                console.log('Material added and page refreshed.');
+            const challanNo = document.getElementById('challanNo').value;
+
+            // Find existing material with the same SKU and color
+            const existingMaterialDoc = materials.find(m => m.data.sku === sku && m.data.color === color);
+
+            if (existingMaterialDoc) {
+                // Check if a challan with this number already exists for this material
+                if (existingMaterialDoc.data.challans.some(c => c.challanNo === challanNo)) {
+                    alert('A challan with this number already exists for this SKU and color combination.');
+                    return;
+                }
+
+                // Add new challan to existing material
+                const newChallanData = {
+                    challanNo,
+                    vendor: document.getElementById('outputVendor').value,
+                    stage: STAGES[0],
+                    quantities: quantities,
+                    date: new Date().toISOString()
+                };
+                const updatedChallans = [...existingMaterialDoc.data.challans, newChallanData];
+                const updateData = { challans: updatedChallans };
+
+                if (await updateMaterial(existingMaterialDoc.id, updateData)) {
+                    await addTransaction({ ...newChallanData, sku, color }, `Initial output`);
+                    this.reset();
+                    document.getElementById('size-quantity-container').innerHTML = '';
+                    DEFAULT_SIZES.forEach(s => createSizeInputField(s, 'size-quantity-container'));
+                    document.getElementById('total-qty-display').textContent = `Total Quantity: 0`;
+                    openTab({ currentTarget: document.getElementById('home-tab') }, 'Home');
+                    console.log('New challan added to existing material and page refreshed.');
+                }
+            } else {
+                // No material found, create a new material record
+                const challanData = {
+                    challanNo,
+                    vendor: document.getElementById('outputVendor').value,
+                    stage: STAGES[0],
+                    quantities: quantities,
+                    date: new Date().toISOString()
+                };
+                const newMaterial = {
+                    sku,
+                    type: itemType,
+                    color,
+                    rate: parseFloat(document.getElementById('rate').value),
+                    initialQuantities: { ...quantities },
+                    receivedQuantities: {},
+                    challans: [challanData]
+                };
+                if (await addMaterial(newMaterial)) {
+                    this.reset();
+                    document.getElementById('size-quantity-container').innerHTML = '';
+                    DEFAULT_SIZES.forEach(s => createSizeInputField(s, 'size-quantity-container'));
+                    document.getElementById('total-qty-display').textContent = `Total Quantity: 0`;
+                    openTab({ currentTarget: document.getElementById('home-tab') }, 'Home');
+                    console.log('Material added and page refreshed.');
+                }
             }
         });
 
@@ -1430,6 +1475,20 @@
             const challanLabels = material.data.challans.map(c => `Challan ${c.challanNo}`);
             const wipQuantities = material.data.challans.map(c => c.stage !== FINAL_STAGE ? sumQuantities(c.quantities) : 0);
             const finishedQuantities = material.data.challans.map(c => c.stage === FINAL_STAGE ? sumQuantities(c.quantities) : 0);
+            const challanDetailsBody = document.querySelector("#challanDetailsTable tbody");
+            challanDetailsBody.innerHTML = '';
+
+            // Populate the detailed challan table
+            material.data.challans.forEach(challan => {
+                const row = challanDetailsBody.insertRow();
+                const totalQty = sumQuantities(challan.quantities);
+                row.innerHTML = `
+                    <td>${challan.challanNo}</td>
+                    <td>${totalQty}</td>
+                    <td>${challan.stage}</td>
+                    <td>${challan.vendor}</td>
+                `;
+            });
 
             const ctx = document.getElementById('challanProgressChart').getContext('2d');
             if (myChart) {
