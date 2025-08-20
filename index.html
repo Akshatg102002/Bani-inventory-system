@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Manufacturing & Inventory System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --dark-bg: #2c3e50;
+            --light-bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --success-color: #2ecc71;
+            --warning-color: #f1c40f;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--light-bg);
+            color: #343a40;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: auto;
+            background: var(--card-bg);
+            padding: 25px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            color: var(--dark-bg);
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        h2 {
+            color: var(--dark-bg);
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 10px;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .home-dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-card {
+            background-color: #f1f3f5;
+            padding: 25px;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .dashboard-card h3 {
+            margin: 10px 0 0;
+            font-size: 1rem;
+            color: #555;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .dashboard-card .value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--dark-bg);
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #dee2e6;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .tab-link {
+            padding: 12px 22px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            margin-bottom: -2px;
+            color: #6c757d;
+            transition: all 0.2s;
+        }
+
+        .tab-link.active {
+            border-bottom: 3px solid var(--primary-color);
+            font-weight: 600;
+            color: #343a40;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Added new styling for tables to enable scrolling */
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+        
+        /* Fixed table header to prevent scrolling with content */
+        thead tr {
+            position: sticky;
+            top: 0;
+            background-color: var(--dark-bg);
+            z-index: 10;
+        }
+
+        th,
+        td {
+            padding: 14px;
+            border: 1px solid #dee2e6;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: var(--dark-bg);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: var(--light-bg);
+        }
+
+        tr:hover {
+            background-color: #e9ecef;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        input,
+        select,
+        button {
+            padding: 12px;
+            border: 1px solid #ced4da;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, .25);
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        #vendorForm {
+            display: flex;
+            align-items: flex-end;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .info-box {
+            background-color: #eaf5ff;
+            border-left: 4px solid var(--primary-color);
+            padding: 15px;
+            margin: 10px 0;
+            font-weight: 500;
+        }
+
+        #wip-workflow-container,
+        #rec-workflow-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        #wip-details-box,
+        #rec-details-box {
+            background: #f1f3f5;
+            padding: 20px;
+        }
+
+        .wip-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .size-quantity-section {
+            grid-column: 1 / -1;
+            background: #fbfdff;
+            border: 1px solid #e9ecef;
+            padding: 20px;
+            margin-top: 10px;
+        }
+
+        .size-quantity-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .size-input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .size-input-group input {
+            width: 80px;
+            text-align: center;
+        }
+
+        .size-input-group .size-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .add-size-btn {
+            background-color: #28a745;
+        }
+
+        .delete-btn {
+            background-color: #e74c3c;
+        }
+
+        .edit-btn {
+            background-color: #ffc107;
+            margin-right: 5px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            color: #343a40;
+            margin: 5% auto;
+            padding: 30px;
+            border: 1px solid #ccc;
+            width: 90%;
+            max-width: 950px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: var(--dark-bg);
+            border: none;
+            margin: 0;
+        }
+
+        .close-button {
+            color: #888;
+            font-size: 32px;
+            font-weight: bold;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .modal-card {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 20px;
+        }
+
+        .modal-card h3 {
+            color: var(--dark-bg);
+            margin-top: 0;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 10px;
+        }
+
+        .modal-card p {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        .modal-card strong {
+            color: #555;
+            margin-right: 8px;
+        }
+
+        .progress-section {
+            grid-column: 1 / -1;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            background-color: #e9ecef;
+        }
+
+        .progress-bar-fill {
+            height: 25px;
+            background: var(--success-color);
+            text-align: center;
+            line-height: 25px;
+            font-weight: bold;
+            color: #fff;
+            transition: width 0.5s ease;
+        }
+
+        .stages-list {
+            list-style: none;
+            padding: 0;
+            grid-column: 1 / -1;
+        }
+
+        .stage-item {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            margin-bottom: 15px;
+            padding: 20px;
+            border-left: 5px solid #bdc3c7;
+        }
+
+        .stage-item.completed {
+            border-color: var(--success-color);
+            background-color: #f0fff4;
+        }
+
+        .stage-item.in-progress {
+            border-color: var(--warning-color);
+            background-color: #fffaf0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>BANI Manufacturing & Inventory System</h1>
+
+        <div class="tabs">
+            <button class="tab-link active" id="home-tab">Home</button>
+            <button class="tab-link" id="record-output-tab">Record Output</button>
+            <button class="tab-link" id="wip-tab">Work in Progress</button>
+            <button class="tab-link" id="record-receiving-tab">Record Receiving</button>
+            <button class="tab-link" id="manage-vendors-tab">Manage Vendors</button>
+            <button class="tab-link" id="transactions-tab">Transactions</button>
+        </div>
+
+        <div id="Home" class="tab-content active">
+            <div class="home-dashboard">
+                <div class="dashboard-card">
+                    <div class="value" id="stockOnHand">0</div>
+                    <h3>Stock on Hand</h3>
+                </div>
+                <div class="dashboard-card">
+                    <div class="value" id="workInProgress">0</div>
+                    <h3>Work in Progress</h3>
+                </div>
+                <div class="dashboard-card">
+                    <div class="value" id="finishedAwaiting">0</div>
+                    <h3>Finished (Awaiting Receipt)</h3>
+                </div>
+                <div class="dashboard-card">
+                    <div class="value" id="totalReceived">0</div>
+                    <h3>Total Received</h3>
+                </div>
+            </div>
+            <h2>Inventory Dashboard</h2>
+            <div class="table-container">
+                <table id="stockTable">
+                    <thead>
+                        <tr>
+                            <th>SKU</th>
+                            <th>Type</th>
+                            <th>Color</th>
+                            <th>Total Qty</th>
+                            <th>Current Stage</th>
+                            <th>WIP</th>
+                            <th>Finished</th>
+                            <th>Received</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <hr style="margin: 30px 0;">
+
+            <h2>SKU Progress Visualization</h2>
+            <div style="margin-bottom: 20px;">
+                <input type="text" id="sku-search-input" placeholder="Search by SKU..." style="width: 250px; padding: 10px;">
+                <button id="sku-search-btn" style="padding: 10px;">Search</button>
+            </div>
+            
+            <div id="visualization-container" style="display: none; padding: 20px; background: #f8f9fa; border: 1px solid #e9ecef;">
+                <h3>Progress for SKU: <span id="visualization-sku-title"></span></h3>
+                <div style="max-height: 400px;">
+                    <canvas id="challanProgressChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div id="RecordOutput" class="tab-content">
+            <h2>Record Output Material</h2>
+            <form id="outputForm" class="form-grid">
+                <div class="form-group"><label for="sku">SKU</label><input type="text" id="sku" required></div>
+                <div class="form-group"><label for="itemType">Item Type</label><select id="itemType" required>
+                        <option value="">Select Type</option>
+                        <option value="Co-ord">Co-ord</option>
+                        <option value="SKD">SKD</option>
+                        <option value="Dress">Dress</option>
+                        <option value="Dupatta">Dupatta</option>
+                        <option value="Custom">Add Custom...</option>
+                    </select><input type="text" id="customItemType" placeholder="Specify custom type" style="display:none; margin-top:10px;"></div>
+                <div class="form-group"><label for="color">Color</label><input type="text" id="color" required></div>
+                <div class="form-group"><label for="challanNo">Challan No</label><input type="text" id="challanNo" required></div>
+                <div class="form-group"><label for="rate">Rate (per item)</label><input type="number" id="rate" step="0.01" required></div>
+                <div class="form-group"><label for="outputVendor">Vendor for Cutting</label><select id="outputVendor" required></select></div>
+                <div class="form-group"><label for="remarks">Remarks</label><input type="text" id="remarks"></div>
+                <div class="size-quantity-section">
+                    <h3>Size-wise Quantities</h3>
+                    <div id="size-quantity-container" class="size-quantity-container"></div>
+                    <div style="margin-top: 15px; display:flex; align-items:center; gap:20px;">
+                        <button type="button" class="add-size-btn" id="add-output-size-btn"><i class="fas fa-plus"></i> Add Size</button>
+                        <strong id="total-qty-display">Total Quantity: 0</strong>
+                    </div>
+                </div>
+                <button type="submit" style="grid-column: 1 / -1; padding: 15px; font-size: 1.1rem;">Issue for Cutting</button>
+            </form>
+        </div>
+
+        <div id="WIP" class="tab-content">
+            <h2>Update Work in Progress</h2>
+            <form id="wipForm">
+                <div id="wip-workflow-container">
+                    <div class="form-group">
+                        <label for="wipChallan">1. Select Challan to Update</label>
+                        <select id="wipChallan" required></select>
+                    </div>
+                    <div id="wip-details-box" style="display: none;">
+                        <div class="info-box">Current Stage: <strong id="wipCurrentStage"></strong> | Available Qty: <strong id="wipAvailableQty"></strong></div>
+                        <div class="wip-grid" style="margin-top: 20px;">
+                            <div class="form-group"><label for="wipNextStage">2. Move to Stage</label><select id="wipNextStage" required></select></div>
+                            <div class="form-group"><label for="wipVendor">3. Assign to Vendor</label><select id="wipVendor" required></select></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="wip-size-section" class="size-quantity-section" style="display: none;">
+                    <h4>4. Quantities to Update by Size</h4>
+                    <div id="wip-size-container" class="size-quantity-container"></div>
+                </div>
+                <div class="form-group" style="margin-top:20px;">
+                    <label for="wipNewChallan">5. New Challan No (Optional)</label>
+                    <input type="text" id="wipNewChallan" placeholder="Leave blank to use existing challan number">
+                </div>
+                <button type="submit" style="margin-top: 20px; width:100%; padding: 15px; font-size: 1.1rem;">Update Progress</button>
+            </form>
+        </div>
+
+        <div id="RecordReceiving" class="tab-content">
+            <h2>Record Receiving Material</h2>
+            <form id="receivingForm">
+                <div class="form-group"><label for="recChallan">Select Challan to Receive</label><select id="recChallan" required></select></div>
+                <div id="rec-details-box" style="display:none;">
+                    <p class="info-box"><strong>SKU:</strong> <span id="recSku"></span> | <strong>Color:</strong> <span id="recColor"></span> | <strong>Vendor:</strong> <span id="recVendor"></span></p>
+                </div>
+                <div id="rec-size-section" class="size-quantity-section" style="display: none;">
+                    <h3>Quantities to Receive by Size</h3>
+                    <div id="rec-size-container" class="size-quantity-container"></div>
+                </div>
+                <button type="submit" style="margin-top:20px; width:100%; padding: 15px;">Mark as Received</button>
+            </form>
+        </div>
+
+        <div id="ManageVendors" class="tab-content">
+            <h2>Manage Vendors</h2>
+            <form id="vendorForm">
+                <div class="form-group"><label for="vendorName">Vendor Name</label><input type="text" id="vendorName" required></div>
+                <div class="form-group"><label>Job Types (Select all that apply)</label>
+                    <div id="jobTypesContainer" style="display:flex; flex-wrap:wrap; gap: 15px; padding: 10px; border: 1px solid #ced4da;">
+                    </div>
+                </div>
+                <button type="submit">Register Vendor</button>
+            </form>
+            <hr style="margin: 30px 0;">
+            <h3>Registered Vendors</h3>
+            <div class="table-container">
+                <table id="vendorTable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Job Types</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="Transactions" class="tab-content">
+            <h2>Transactions Log</h2>
+            <div class="table-container">
+                <table id="transactionTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Challan</th>
+                            <th>SKU</th>
+                            <th>Type</th>
+                            <th>Color</th>
+                            <th>Stage</th>
+                            <th>Size</th>
+                            <th>Qty</th>
+                            <th>Vendor</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vendor Edit Modal -->
+    <div id="vendorEditModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Vendor</h2>
+                <button class="close-button" id="close-vendor-edit-modal">&times;</button>
+            </div>
+            <form id="editVendorForm">
+                <input type="hidden" id="editVendorId">
+                <div class="form-group">
+                    <label for="editVendorName">Vendor Name</label>
+                    <input type="text" id="editVendorName" required>
+                </div>
+                <div class="form-group">
+                    <label>Job Types</label>
+                    <div id="editJobTypesContainer" style="display:flex; flex-wrap:wrap; gap: 15px; padding: 10px; border: 1px solid #ced4da;">
+                    </div>
+                </div>
+                <button type="submit" style="margin-top: 20px;">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Material Edit Modal -->
+    <div id="materialEditModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Material Details</h2>
+                <button class="close-button" id="close-material-edit-modal">&times;</button>
+            </div>
+            <form id="editMaterialForm">
+                <input type="hidden" id="editMaterialId">
+                <div class="form-grid">
+                    <div class="form-group"><label for="editSku">SKU</label><input type="text" id="editSku" required></div>
+                    <div class="form-group"><label for="editItemType">Item Type</label><select id="editItemType" required>
+                            <option value="">Select Type</option>
+                            <option value="Co-ord">Co-ord</option>
+                            <option value="SKD">SKD</option>
+                            <option value="Dress">Dress</option>
+                            <option value="Dupatta">Dupatta</option>
+                        </select><input type="text" id="editCustomItemType" placeholder="Specify custom type" style="display:none; margin-top:10px;"></div>
+                    <div class="form-group"><label for="editColor">Color</label><input type="text" id="editColor" required></div>
+                    <div class="form-group"><label for="editRate">Rate (per item)</label><input type="number" id="editRate" step="0.01" required></div>
+                    <div class="size-quantity-section" style="grid-column: 1 / -1;">
+                        <h3>Size-wise Initial Quantities</h3>
+                        <div id="edit-size-quantity-container" class="size-quantity-container"></div>
+                        <div style="margin-top: 15px; display:flex; align-items:center; gap:20px;">
+                            <button type="button" class="add-size-btn" id="add-edit-size-btn"><i class="fas fa-plus"></i> Add Size</button>
+                            <strong id="edit-total-qty-display">Total Quantity: 0</strong>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" style="grid-column: 1 / -1; padding: 15px; font-size: 1.1rem; margin-top: 20px;">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="skuModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title-sku"><i class="fas fa-chart-line"></i> SKU Manufacturing Progress</h2>
+                <button class="close-button" id="close-sku-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-card">
+                    <h3><i class="fas fa-info-circle"></i> SKU Details</h3>
+                    <p><strong>SKU:</strong> <span id="modal-sku"></span></p>
+                    <p><strong>Type:</strong> <span id="modal-type"></span></p>
+                    <p><strong>Color:</strong> <span id="modal-color"></span></p>
+                    <p><strong>Rate:</strong> ₹<span id="modal-rate"></span></p>
+                </div>
+                <div class="modal-card">
+                    <h3><i class="fas fa-boxes"></i> Stock Summary</h3>
+                    <p><strong>Total Output:</strong> <span id="modal-total-output"></span></p>
+                    <p><strong>WIP / Finished:</strong> <span id="modal-total-issued"></span></p>
+                    <p><strong>Received:</strong> <span id="modal-total-received"></span></p>
+                    <p><strong>Sizes:</strong> <span id="modal-sizes"></span></p>
+                </div>
+                <div class="progress-section">
+                    <h3><i class="fas fa-tasks"></i> Overall Progress (% Received)</h3>
+                    <div class="progress-bar-container">
+                        <div id="modal-progress-bar" class="progress-bar-fill" style="width: 0%;">0%</div>
+                    </div>
+                    <p class="progress-text">Current Active Stage: <span id="modal-current-stage"></span></p>
+                </div>
+                <div class="stages-section" style="grid-column: 1 / -1;">
+                    <h3><i class="fas fa-industry"></i> Manufacturing Stages</h3>
+                    <div id="modal-stages-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+        // Global variables provided by the environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        
+        // This variable is now correctly loaded from the environment
+        const firebaseConfig = {
+            apiKey: "AIzaSyCa9ujZAkO8d7_QLv1KWOOEJ3ww8rFddh0",
+            authDomain: "banistock-57f35.firebaseapp.com",
+            projectId: "banistock-57f35",
+            storageBucket: "banistock-57f35.firebasestorage.app",
+            messagingSenderId: "921264942139",
+            appId: "1:921264942139:web:7e53870dc9a48cd406401e",
+            measurementId: "G-3FVJTK0MX0"
+        };
+        
+
+        let db;
+        let auth;
+        let userId = null;
+        let isAuthReady = false;
+
+        let materials = [];
+        let vendors = [];
+        let transactions = [];
+        let myChart;
+
+        const STAGES = ["Cutting", "Embroidery", "Printing", "Stitching", "Button Work", "Finishing"];
+        const FINAL_STAGE = STAGES[STAGES.length - 1];
+        const DEFAULT_SIZES = ["S", "M", "L", "XL"];
+        const collections = {
+            materials: "materials",
+            vendors: "vendors",
+            transactions: "transactions"
+        };
+
+        function openTab(evt, tabName) {
+            document.querySelectorAll(".tab-content").forEach(tc => tc.style.display = "none");
+            document.querySelectorAll(".tab-link").forEach(tl => tl.classList.remove("active"));
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.classList.add("active");
+            renderAll();
+        }
+
+        function sumQuantities(obj) {
+            return Object.values(obj || {}).reduce((s, q) => s + q, 0);
+        }
+
+        function getQuantitiesFromContainer(containerId) {
+            const quantities = {};
+            let total = 0;
+            document.querySelectorAll(`#${containerId} input[data-size]`).forEach(input => {
+                const qty = parseInt(input.value) || 0;
+                if (qty > 0) {
+                    quantities[input.dataset.size] = qty;
+                    total += qty;
+                }
+            });
+            return { quantities, total };
+        }
+
+        async function addTransaction(data, remarks) {
+            try {
+                if (!isAuthReady) return;
+                const materialDoc = materials.find(m => m.data.sku === data.sku && m.data.color === data.color);
+                const material = materialDoc ? materialDoc.data : null;
+                if (!material) return;
+
+                const transactionCollection = collection(db, `artifacts/${appId}/users/${userId}/${collections.transactions}`);
+                const dateString = new Date().toLocaleString();
+
+                Object.keys(data.quantities).forEach(size => {
+                    addDoc(transactionCollection, {
+                        date: dateString,
+                        challanNo: data.challanNo,
+                        sku: data.sku,
+                        type: material.type,
+                        color: material.color,
+                        stage: data.stage,
+                        size: size,
+                        qty: data.quantities[size],
+                        vendor: data.vendor,
+                        remarks
+                    });
+                });
+            } catch (e) {
+                console.error("Error adding transaction: ", e);
+            }
+        }
+
+        // --- UI Rendering ---
+        function renderHomePage() {
+            let stockOnHand = 0,
+                workInProgress = 0,
+                finishedAwaiting = 0,
+                totalReceived = 0;
+            const stockTbody = document.querySelector("#stockTable tbody");
+            stockTbody.innerHTML = '';
+            materials.forEach(materialDoc => {
+                const material = materialDoc.data;
+                const docId = materialDoc.id;
+                const initialQty = sumQuantities(material.initialQuantities);
+                const receivedQty = sumQuantities(material.receivedQuantities);
+                let wipQty = 0,
+                    finishedQty = 0,
+                    latestStageIndex = -1;
+                material.challans.forEach(c => {
+                    const challanQty = sumQuantities(c.quantities);
+                    const stageIndex = STAGES.indexOf(c.stage);
+                    if (stageIndex > latestStageIndex) latestStageIndex = stageIndex;
+                    if (c.stage === FINAL_STAGE) finishedQty += challanQty;
+                    else wipQty += challanQty;
+                });
+                const currentStock = initialQty - wipQty - finishedQty - receivedQty;
+                stockOnHand += currentStock;
+                workInProgress += wipQty;
+                finishedAwaiting += finishedQty;
+                totalReceived += receivedQty;
+                const currentStage = latestStageIndex > -1 ? STAGES[latestStageIndex] : 'Not Started';
+                const row = stockTbody.insertRow();
+                row.style.cursor = 'pointer';
+                row.addEventListener('click', () => showSkuModal(material.sku, material.color));
+                row.innerHTML = `<td>${material.sku}</td><td>${material.type}</td><td>${material.color}</td><td>${initialQty}</td>
+                                 <td>${currentStage}</td><td>${wipQty}</td><td>${finishedQty}</td><td>${receivedQty}</td>
+                                 <td>
+                                     <button class="edit-btn" data-id="${docId}">Edit</button>
+                                     <button class="delete-btn" data-id="${docId}">Delete</button>
+                                 </td>`;
+            });
+            document.getElementById('stockOnHand').textContent = stockOnHand;
+            document.getElementById('workInProgress').textContent = workInProgress;
+            document.getElementById('finishedAwaiting').textContent = finishedAwaiting;
+            document.getElementById('totalReceived').textContent = totalReceived;
+            document.querySelectorAll('.edit-btn').forEach(btn => btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openEditMaterialModal(e.target.dataset.id);
+            }));
+            document.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                deleteMaterial(e.target.dataset.id);
+            }));
+            
+            // Render default chart
+            if (materials.length > 0) {
+                const firstSku = materials[0].data.sku;
+                document.getElementById('sku-search-input').value = firstSku;
+                visualizeSkuProgress(firstSku);
+            }
+        }
+        
+        function renderVendorTable() {
+            const tbody = document.querySelector("#vendorTable tbody");
+            tbody.innerHTML = '';
+            vendors.forEach((vendorDoc) => {
+                const vendor = vendorDoc.data;
+                const docId = vendorDoc.id;
+                const row = tbody.insertRow();
+                row.innerHTML = `<td>${vendor.name}</td><td>${vendor.jobTypes.join(', ')}</td><td>
+                    <button class="edit-btn" data-id="${docId}">Edit</button>
+                    <button class="delete-btn" data-id="${docId}">Delete</button>
+                    </td>`;
+            });
+            document.querySelectorAll('#vendorTable .edit-btn').forEach(btn => btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openEditVendorModal(e.target.dataset.id);
+            }));
+            document.querySelectorAll('#vendorTable .delete-btn').forEach(btn => btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                deleteVendor(e.target.dataset.id);
+            }));
+        }
+
+        function renderTransactionsTable() {
+            const tbody = document.querySelector("#transactionTable tbody");
+            tbody.innerHTML = '';
+            transactions.forEach(tDoc => {
+                const t = tDoc.data;
+                const row = tbody.insertRow();
+                row.innerHTML = `<td>${t.date}</td><td>${t.challanNo}</td><td>${t.sku}</td><td>${t.type}</td><td>${t.color}</td><td>${t.stage}</td>
+                                 <td>${t.size}</td><td>${t.qty}</td><td>${t.vendor}</td><td>${t.remarks || ''}</td>`;
+            });
+        }
+
+        // --- Firestore Functions ---
+        async function addMaterial(data) {
+            try {
+                if (!isAuthReady) {
+                    console.error("Auth not ready.");
+                    return;
+                }
+                const materialCollection = collection(db, `artifacts/${appId}/users/${userId}/${collections.materials}`);
+                await addDoc(materialCollection, data);
+                console.log("Material added successfully!");
+                return true;
+            } catch (e) {
+                console.error("Error adding document: ", e);
+                alert("Error adding material. Please try again.");
+                return false;
+            }
+        }
+
+        async function updateMaterial(docId, data) {
+            try {
+                if (!isAuthReady) {
+                    console.error("Auth not ready.");
+                    return;
+                }
+                const materialDocRef = doc(db, `artifacts/${appId}/users/${userId}/${collections.materials}`, docId);
+                await updateDoc(materialDocRef, data);
+                console.log("Material updated successfully!");
+                return true;
+            } catch (e) {
+                console.error("Error updating document: ", e);
+                alert("Error updating material. Please try again.");
+                return false;
+            }
+        }
+
+        async function deleteMaterial(docId) {
+            if (confirm("Are you sure you want to delete this material record? All associated WIP and transaction history will also be deleted.")) {
+                try {
+                    if (!isAuthReady) {
+                        console.error("Auth not ready.");
+                        return;
+                    }
+                    const materialDocRef = doc(db, `artifacts/${appId}/users/${userId}/${collections.materials}`, docId);
+                    await deleteDoc(materialDocRef);
+                    alert("Material deleted successfully!");
+                    console.log('Material deleted successfully!');
+                } catch (e) {
+                    console.error("Error deleting document: ", e);
+                    alert("Error deleting material. Please try again.");
+                }
+            }
+        }
+
+        async function addVendor(data) {
+            try {
+                if (!isAuthReady) return;
+                const vendorCollection = collection(db, `artifacts/${appId}/users/${userId}/${collections.vendors}`);
+                await addDoc(vendorCollection, data);
+                console.log("Vendor added successfully!");
+                return true;
+            } catch (e) {
+                console.error("Error adding vendor: ", e);
+                alert("Error adding vendor. Please try again.");
+                return false;
+            }
+        }
+
+        async function updateVendor(docId, data) {
+            try {
+                if (!isAuthReady) return;
+                const vendorDocRef = doc(db, `artifacts/${appId}/users/${userId}/${collections.vendors}`, docId);
+                await updateDoc(vendorDocRef, data);
+                console.log("Vendor updated successfully!");
+                return true;
+            } catch (e) {
+                console.error("Error updating vendor: ", e);
+                alert("Error updating vendor. Please try again.");
+                return false;
+            }
+        }
+
+        async function deleteVendor(docId) {
+            if (confirm("Are you sure you want to delete this vendor?")) {
+                try {
+                    if (!isAuthReady) return;
+                    const vendorDocRef = doc(db, `artifacts/${appId}/users/${userId}/${collections.vendors}`, docId);
+                    await deleteDoc(vendorDocRef);
+                    alert("Vendor deleted successfully!");
+                    console.log('Vendor deleted successfully!');
+                } catch (e) {
+                    console.error("Error deleting vendor: ", e);
+                    alert("Error deleting vendor. Please try again.");
+                }
+            }
+        }
+
+        // --- Form Population & Event Handlers ---
+        document.getElementById('vendorForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const name = document.getElementById('vendorName').value;
+            const jobTypes = Array.from(document.querySelectorAll('#jobTypesContainer input:checked')).map(cb => cb.value);
+            if (!name || jobTypes.length === 0) {
+                alert("Vendor name and at least one job type are required.");
+                return;
+            }
+            if (vendors.some(v => v.data.name.toLowerCase() === name.toLowerCase())) {
+                alert('A vendor with this name already exists.');
+                return;
+            }
+            if (await addVendor({ name, jobTypes })) {
+                this.reset();
+                populateJobTypes('jobTypesContainer');
+                alert('Vendor registered successfully!');
+                console.log("Vendor registered successfully!");
+            }
+        });
+
+        function populateJobTypes(containerId, selectedJobs = []) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            STAGES.forEach(stage => {
+                const checked = selectedJobs.includes(stage) ? 'checked' : '';
+                container.innerHTML += `<label style="display:flex; align-items:center; gap:5px;"><input type="checkbox" value="${stage}" ${checked}> ${stage}</label>`;
+            });
+        }
+
+        function openEditVendorModal(docId) {
+            const vendorDoc = vendors.find(v => v.id === docId);
+            const vendor = vendorDoc.data;
+            document.getElementById('editVendorId').value = docId;
+            document.getElementById('editVendorName').value = vendor.name;
+            populateJobTypes('editJobTypesContainer', vendor.jobTypes);
+            document.getElementById('vendorEditModal').style.display = 'block';
+        }
+
+        document.getElementById('editVendorForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const docId = document.getElementById('editVendorId').value;
+            const newName = document.getElementById('editVendorName').value;
+            const newJobTypes = Array.from(document.querySelectorAll('#editJobTypesContainer input:checked')).map(cb => cb.value);
+            if (!newName || newJobTypes.length === 0) {
+                alert("Vendor name and at least one job type are required.");
+                return;
+            }
+            if (vendors.some(v => v.data.name.toLowerCase() === newName.toLowerCase() && v.id !== docId)) {
+                alert('A vendor with this name already exists.');
+                return;
+            }
+            if (await updateVendor(docId, { name: newName, jobTypes: newJobTypes })) {
+                closeModal('vendorEditModal');
+                console.log("Vendor updated successfully!");
+            }
+        });
+
+        document.getElementById('itemType').addEventListener('change', function() {
+            document.getElementById('customItemType').style.display = (this.value === 'Custom') ? 'block' : 'none';
+        });
+
+        document.getElementById('editItemType').addEventListener('change', function() {
+            document.getElementById('editCustomItemType').style.display = (this.value === 'Custom') ? 'block' : 'none';
+        });
+
+        function createSizeInputField(size, containerId, quantity = 0) {
+            const container = document.getElementById(containerId);
+            const group = document.createElement('div');
+            group.className = 'size-input-group';
+            group.innerHTML = `<label class="size-label">${size}</label><input type="number" min="0" value="${quantity}" data-size="${size}">`;
+            container.appendChild(group);
+            const input = group.querySelector('input');
+            if (containerId.includes('quantity')) {
+                input.addEventListener('input', () => {
+                    const { total } = getQuantitiesFromContainer(containerId);
+                    document.getElementById(containerId.startsWith('edit') ? 'edit-total-qty-display' : 'total-qty-display').textContent = `Total Quantity: ${total}`;
+                });
+            }
+            return input;
+        }
+
+        function addSizeField(containerId) {
+            const size = prompt("Enter new size name (e.g., XXL):");
+            if (size && !document.querySelector(`#${containerId} input[data-size="${size.toUpperCase()}"]`)) {
+                createSizeInputField(size.toUpperCase(), containerId);
+            }
+        }
+
+        document.getElementById('outputForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const { quantities, total } = getQuantitiesFromContainer('size-quantity-container');
+            if (total === 0) {
+                alert('Please enter quantities for at least one size.');
+                return;
+            }
+            let itemType = document.getElementById('itemType').value;
+            if (itemType === 'Custom') itemType = document.getElementById('customItemType').value.trim();
+            if (!itemType) {
+                alert('Please select or specify an item type.');
+                return;
+            }
+            const sku = document.getElementById('sku').value;
+            const color = document.getElementById('color').value;
+            if (materials.some(m => m.data.sku === sku && m.data.color === color)) {
+                alert('This SKU and Color combination already exists.');
+                return;
+            }
+            const challanData = {
+                challanNo: document.getElementById('challanNo').value,
+                vendor: document.getElementById('outputVendor').value,
+                stage: STAGES[0],
+                quantities: quantities,
+                date: new Date().toISOString()
+            };
+            const newMaterial = {
+                sku,
+                type: itemType,
+                color,
+                rate: parseFloat(document.getElementById('rate').value),
+                initialQuantities: { ...quantities },
+                receivedQuantities: {},
+                challans: [challanData]
+            };
+            if (await addMaterial(newMaterial)) {
+                this.reset();
+                document.getElementById('size-quantity-container').innerHTML = '';
+                DEFAULT_SIZES.forEach(s => createSizeInputField(s, 'size-quantity-container'));
+                document.getElementById('total-qty-display').textContent = `Total Quantity: 0`;
+                openTab({ currentTarget: document.getElementById('home-tab') }, 'Home');
+                console.log('Material added and page refreshed.');
+            }
+        });
+
+        document.getElementById('editMaterialForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const docId = document.getElementById('editMaterialId').value;
+            const { quantities, total } = getQuantitiesFromContainer('edit-size-quantity-container');
+            if (total === 0) {
+                alert('Total quantity cannot be zero.');
+                return;
+            }
+            let itemType = document.getElementById('editItemType').value;
+            if (itemType === 'Custom') itemType = document.getElementById('editCustomItemType').value.trim();
+            if (!itemType) {
+                alert('Please select or specify an item type.');
+                return;
+            }
+            const updatedMaterial = {
+                sku: document.getElementById('editSku').value,
+                type: itemType,
+                color: document.getElementById('editColor').value,
+                rate: parseFloat(document.getElementById('editRate').value),
+                initialQuantities: quantities,
+            };
+
+            const existingMaterial = materials.find(m => m.id === docId).data;
+            const challans = existingMaterial.challans.map(c => {
+                c.quantities = JSON.parse(JSON.stringify(quantities));
+                return c;
+            });
+            const received = existingMaterial.receivedQuantities;
+            
+            const totalInitial = sumQuantities(quantities);
+            const totalReceived = sumQuantities(received);
+
+            if (totalReceived > totalInitial) {
+                alert('The number of received items cannot exceed the new total initial quantity.');
+                return;
+            }
+            
+            const updateData = {
+                ...updatedMaterial,
+                challans,
+                receivedQuantities: received
+            };
+
+            if (await updateMaterial(docId, updateData)) {
+                closeModal('materialEditModal');
+                openTab({ currentTarget: document.getElementById('home-tab') }, 'Home');
+                console.log('Material updated and page refreshed.');
+            }
+        });
+
+        function openEditMaterialModal(docId) {
+            const materialDoc = materials.find(m => m.id === docId);
+            const material = materialDoc.data;
+            document.getElementById('editMaterialId').value = docId;
+            document.getElementById('editSku').value = material.sku;
+            document.getElementById('editColor').value = material.color;
+            document.getElementById('editRate').value = material.rate;
+            document.getElementById('editItemType').value = material.type;
+            document.getElementById('editCustomItemType').style.display = 'none';
+
+            const sizeContainer = document.getElementById('edit-size-quantity-container');
+            sizeContainer.innerHTML = '';
+            let totalQty = 0;
+            Object.entries(material.initialQuantities).forEach(([size, qty]) => {
+                createSizeInputField(size, 'edit-size-quantity-container', qty);
+                totalQty += qty;
+            });
+            document.getElementById('edit-total-qty-display').textContent = `Total Quantity: ${totalQty}`;
+
+            document.getElementById('materialEditModal').style.display = 'block';
+        }
+
+        function populateWipChallanDropdown() {
+            const select = document.getElementById('wipChallan');
+            select.innerHTML = '<option value="">-- Select a Challan --</option>';
+            materials.forEach(mDoc => {
+                const m = mDoc.data;
+                m.challans.filter(c => sumQuantities(c.quantities) > 0)
+                    .forEach(c => select.add(new Option(`Challan ${c.challanNo} (SKU: ${m.sku}, Stage: ${c.stage})`, `${mDoc.id}|${c.challanNo}`)));
+            });
+        }
+
+        document.getElementById('wipChallan').addEventListener('change', function() {
+            const detailsBox = document.getElementById('wip-details-box');
+            const sizeSection = document.getElementById('wip-size-section');
+            if (!this.value) {
+                detailsBox.style.display = 'none';
+                sizeSection.style.display = 'none';
+                return;
+            }
+            detailsBox.style.display = 'block';
+            sizeSection.style.display = 'block';
+            const [docId, challanNo] = this.value.split('|');
+            const material = materials.find(m => m.id === docId).data;
+            const challan = material.challans.find(c => c.challanNo === challanNo);
+            document.getElementById('wipCurrentStage').textContent = challan.stage;
+            document.getElementById('wipAvailableQty').textContent = sumQuantities(challan.quantities);
+            const nextStageSelect = document.getElementById('wipNextStage');
+            nextStageSelect.innerHTML = '<option value="">-- Select Next Stage --</option>';
+            STAGES.slice(STAGES.indexOf(challan.stage) + 1).forEach(stage => nextStageSelect.add(new Option(stage, stage)));
+            document.getElementById('wipVendor').innerHTML = '<option value="">-- Select Stage First --</option>';
+            const sizeContainer = document.getElementById('wip-size-container');
+            sizeContainer.innerHTML = '';
+            Object.entries(challan.quantities).forEach(([size, qty]) => {
+                const input = createSizeInputField(size, 'wip-size-container', qty);
+                input.setAttribute('max', qty);
+            });
+            const firstInput = sizeContainer.querySelector('input');
+            if (firstInput) {
+                firstInput.focus();
+                firstInput.select();
+            }
+        });
+
+        document.getElementById('wipNextStage').addEventListener('change', function() {
+            if (!this.value) {
+                document.getElementById('wipVendor').innerHTML = '<option value="">-- Select Stage First --</option>';
+                return;
+            }
+            populateVendorDropdown('wipVendor', this.value);
+        });
+
+        document.getElementById('wipForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const selectedId = document.getElementById('wipChallan').value;
+            if (!selectedId) {
+                alert('Please select a challan.');
+                return;
+            }
+            const { quantities: quantitiesToUpdate, total } = getQuantitiesFromContainer('wip-size-container');
+            if (total === 0) {
+                alert('Please specify quantity for at least one size.');
+                return;
+            }
+            const [docId, challanNo] = selectedId.split('|');
+            const materialDocRef = doc(db, `artifacts/${appId}/users/${userId}/${collections.materials}`, docId);
+            const materialData = (await getDoc(materialDocRef)).data();
+            const sourceChallan = materialData.challans.find(c => c.challanNo === challanNo);
+
+            Object.keys(quantitiesToUpdate).forEach(size => {
+                sourceChallan.quantities[size] -= quantitiesToUpdate[size];
+                if (sourceChallan.quantities[size] === 0) delete sourceChallan.quantities[size];
+            });
+            if (Object.keys(sourceChallan.quantities).length === 0) materialData.challans = materialData.challans.filter(c => c !== sourceChallan);
+            const newChallanData = {
+                challanNo: document.getElementById('wipNewChallan').value.trim() || sourceChallan.challanNo,
+                vendor: document.getElementById('wipVendor').value,
+                stage: document.getElementById('wipNextStage').value,
+                quantities: quantitiesToUpdate,
+                date: new Date().toISOString()
+            };
+            materialData.challans.push(newChallanData);
+            if (await updateMaterial(docId, materialData)) {
+                await addTransaction({ ...newChallanData, sku: materialData.sku, color: materialData.color }, `Moved from ${sourceChallan.stage}`);
+                this.reset();
+                document.getElementById('wip-details-box').style.display = 'none';
+                document.getElementById('wip-size-section').style.display = 'none';
+                console.log('WIP updated successfully!');
+            }
+        });
+
+        function populateRecChallanDropdown() {
+            const select = document.getElementById('recChallan');
+            select.innerHTML = '<option value="">-- Select a Challan --</option>';
+            materials.forEach(mDoc => {
+                const m = mDoc.data;
+                m.challans.filter(c => sumQuantities(c.quantities) > 0)
+                    .sort((a, b) => (b.stage === FINAL_STAGE) - (a.stage === FINAL_STAGE))
+                    .forEach(c => select.add(new Option(`Challan ${c.challanNo} (SKU: ${m.sku}, Stage: ${c.stage})`, `${mDoc.id}|${c.challanNo}`)));
+            });
+        }
+
+        document.getElementById('recChallan').addEventListener('change', function() {
+            const detailsBox = document.getElementById('rec-details-box');
+            const sizeSection = document.getElementById('rec-size-section');
+            if (!this.value) {
+                detailsBox.style.display = 'none';
+                sizeSection.style.display = 'none';
+                return;
+            }
+            detailsBox.style.display = 'block';
+            sizeSection.style.display = 'block';
+            const [docId, challanNo] = this.value.split('|');
+            const material = materials.find(m => m.id === docId).data;
+            const challan = material.challans.find(c => c.challanNo === challanNo);
+            document.getElementById('recSku').textContent = material.sku;
+            document.getElementById('recColor').textContent = material.color;
+            document.getElementById('recVendor').textContent = challan.vendor;
+            const sizeContainer = document.getElementById('rec-size-container');
+            sizeContainer.innerHTML = '';
+            Object.entries(challan.quantities).forEach(([size, qty]) => {
+                if (qty > 0) {
+                    const group = document.createElement('div');
+                    group.className = 'size-input-group';
+                    group.innerHTML = `<label class="size-label">${size} (Av: ${qty})</label><input type="number" min="0" max="${qty}" value="${qty}" data-size="${size}">`;
+                    sizeContainer.appendChild(group);
+                }
+            });
+        });
+
+        document.getElementById('receivingForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const selectedId = document.getElementById('recChallan').value;
+            if (!selectedId) {
+                alert('Please select a challan.');
+                return;
+            }
+            const { quantities: quantitiesToReceive, total } = getQuantitiesFromContainer('rec-size-container');
+            if (total === 0) {
+                alert('Please specify quantity to receive.');
+                return;
+            }
+            const [docId, challanNo] = selectedId.split('|');
+            const materialDocRef = doc(db, `artifacts/${appId}/users/${userId}/${collections.materials}`, docId);
+            const materialData = (await getDoc(materialDocRef)).data();
+            const sourceChallan = materialData.challans.find(c => c.challanNo === challanNo);
+
+            Object.entries(quantitiesToReceive).forEach(([size, qty]) => {
+                materialData.receivedQuantities[size] = (materialData.receivedQuantities[size] || 0) + qty;
+                sourceChallan.quantities[size] -= qty;
+                if (sourceChallan.quantities[size] === 0) delete sourceChallan.quantities[size];
+            });
+            if (Object.keys(sourceChallan.quantities).length === 0) materialData.challans = materialData.challans.filter(c => c !== sourceChallan);
+
+            if (await updateMaterial(docId, materialData)) {
+                await addTransaction({ ...sourceChallan, sku: materialData.sku, color: materialData.color, quantities: quantitiesToReceive }, `Received`);
+                this.reset();
+                document.getElementById('rec-details-box').style.display = 'none';
+                document.getElementById('rec-size-section').style.display = 'none';
+                console.log('Items received successfully!');
+            }
+        });
+
+        function populateVendorDropdown(dropdownId, jobType) {
+            const select = document.getElementById(dropdownId);
+            select.innerHTML = '<option value="">-- Select Vendor --</option>';
+            vendors.filter(v => v.data.jobTypes.includes(jobType)).forEach(vendor => {
+                select.add(new Option(vendor.data.name, vendor.data.name));
+            });
+        }
+
+        function showSkuModal(sku, color) {
+            const material = materials.find(m => m.data.sku === sku && m.data.color === color).data;
+            if (!material) return;
+            const totalOutput = sumQuantities(material.initialQuantities);
+            const totalReceived = sumQuantities(material.receivedQuantities);
+            let wipQty = 0,
+                finishedQty = 0;
+            const stageProgress = STAGES.reduce((acc, s) => ({ ...acc, [s]: { status: 'Pending', details: [] } }), {});
+            let latestStageIndex = -1;
+            material.challans.forEach(c => {
+                const qty = sumQuantities(c.quantities);
+                const stageIndex = STAGES.indexOf(c.stage);
+                if (stageIndex > latestStageIndex) latestStageIndex = stageIndex;
+                if (c.stage === FINAL_STAGE) finishedQty += qty;
+                else wipQty += qty;
+                stageProgress[c.stage].details.push({
+                    vendor: c.vendor,
+                    qty: qty,
+                    date: new Date(c.date).toLocaleDateString(),
+                    challan: c.challanNo
+                });
+            });
+
+            for (let i = 0; i < latestStageIndex; i++) {
+                if (stageProgress[STAGES[i]].details.length > 0 || sumQuantities(stageProgress[STAGES[i + 1]].details.map(d => d.qty)) > 0) {
+                    stageProgress[STAGES[i]].status = 'Completed';
+                }
+            }
+            if (latestStageIndex > -1 && stageProgress[STAGES[latestStageIndex]].details.length > 0) stageProgress[STAGES[latestStageIndex]].status = 'In Progress';
+
+            const progressPercent = totalOutput > 0 ? (totalReceived / totalOutput) * 100 : 0;
+            document.getElementById('modal-sku').textContent = material.sku;
+            document.getElementById('modal-type').textContent = material.type;
+            document.getElementById('modal-color').textContent = material.color;
+            document.getElementById('modal-rate').textContent = material.rate;
+            document.getElementById('modal-total-output').textContent = totalOutput;
+            document.getElementById('modal-total-issued').textContent = `${wipQty} / ${finishedQty}`;
+            document.getElementById('modal-total-received').textContent = totalReceived;
+            document.getElementById('modal-sizes').textContent = Object.entries(material.initialQuantities).map(([s, q]) => `${s}: ${q}`).join(', ');
+            const progressBar = document.getElementById('modal-progress-bar');
+            progressBar.style.width = `${progressPercent}%`;
+            progressBar.textContent = `${Math.round(progressPercent)}%`;
+            document.getElementById('modal-current-stage').textContent = latestStageIndex > -1 ? STAGES[latestStageIndex] : 'Not Started';
+            const stagesContainer = document.getElementById('modal-stages-list');
+            stagesContainer.innerHTML = '';
+            STAGES.forEach((stage, index) => {
+                const progress = stageProgress[stage];
+                let statusClass = progress.status.toLowerCase().replace(' ', '-');
+                const stageEl = document.createElement('div');
+                stageEl.className = `stage-item ${statusClass}`;
+                let detailsHtml = '<p>Awaiting turn...</p>';
+                if (progress.details.length > 0) {
+                    detailsHtml = progress.details.map(d => `<p><strong>Vendor:</strong> ${d.vendor} | <strong>Qty:</strong> ${d.qty} | <strong>Challan:</strong> ${d.challan}</p>`).join('');
+                }
+                stageEl.innerHTML = `<div class="stage-header"><span>${index + 1}. ${stage}</span><span class="stage-status ${statusClass}">${progress.status}</span></div><div class="stage-body">${detailsHtml}</div>`;
+                stagesContainer.appendChild(stageEl);
+            });
+            document.getElementById('skuModal').style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        window.onclick = e => {
+            if (e.target.id === 'skuModal' || e.target.id === 'close-sku-modal') closeModal('skuModal');
+            if (e.target.id === 'vendorEditModal' || e.target.id === 'close-vendor-edit-modal') closeModal('vendorEditModal');
+            if (e.target.id === 'materialEditModal' || e.target.id === 'close-material-edit-modal') closeModal('materialEditModal');
+        };
+
+        // --- Visualization Functions ---
+        function visualizeSkuProgress(sku) {
+            const material = materials.find(m => m.data.sku === sku);
+            const visContainer = document.getElementById('visualization-container');
+            const title = document.getElementById('visualization-sku-title');
+            
+            if (!material) {
+                visContainer.style.display = 'none';
+                alert('No data found for this SKU.');
+                return;
+            }
+
+            title.textContent = sku;
+            visContainer.style.display = 'block';
+
+            const challanLabels = material.data.challans.map(c => `Challan ${c.challanNo}`);
+            const wipQuantities = material.data.challans.map(c => c.stage !== FINAL_STAGE ? sumQuantities(c.quantities) : 0);
+            const finishedQuantities = material.data.challans.map(c => c.stage === FINAL_STAGE ? sumQuantities(c.quantities) : 0);
+
+            const ctx = document.getElementById('challanProgressChart').getContext('2d');
+            if (myChart) {
+                myChart.destroy();
+            }
+
+            myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: challanLabels,
+                    datasets: [{
+                        label: 'In Progress',
+                        data: wipQuantities,
+                        backgroundColor: '#3498db',
+                    }, {
+                        label: 'Finished',
+                        data: finishedQuantities,
+                        backgroundColor: '#2ecc71',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            stacked: true,
+                        },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Quantity'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // --- Firebase Setup ---
+        async function setupFirebase() {
+            try {
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        isAuthReady = true;
+                        console.log(`User authenticated with UID: ${userId}`);
+                        setupFirestoreListeners();
+                    } else {
+                        console.log("No user signed in. Attempting anonymous sign-in.");
+                        if (initialAuthToken) {
+                            await signInWithCustomToken(auth, initialAuthToken);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    }
+                });
+            } catch (e) {
+                console.error("Error setting up Firebase: ", e);
+            }
+        }
+
+        function setupFirestoreListeners() {
+            if (!isAuthReady) {
+                console.error("Firestore listeners not started, authentication not complete.");
+                return;
+            }
+            // Materials
+            onSnapshot(collection(db, `artifacts/${appId}/users/${userId}/${collections.materials}`), (querySnapshot) => {
+                materials = querySnapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }));
+                renderAll();
+            }, (error) => {
+                console.error("Error fetching materials: ", error);
+            });
+
+            // Vendors
+            onSnapshot(collection(db, `artifacts/${appId}/users/${userId}/${collections.vendors}`), async (querySnapshot) => {
+                vendors = querySnapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }));
+                const warehouseExists = vendors.some(v => v.data.name === 'WAREHOUSE');
+                if (!warehouseExists) {
+                    // Check again before adding to avoid race conditions
+                    const updatedVendors = (await getDocs(collection(db, `artifacts/${appId}/users/${userId}/${collections.vendors}`))).docs.map(doc => ({ id: doc.id, data: doc.data() }));
+                    if (!updatedVendors.some(v => v.data.name === 'WAREHOUSE')) {
+                        await addVendor({ name: 'WAREHOUSE', jobTypes: ['Cutting'] });
+                    }
+                }
+                renderAll();
+            }, (error) => {
+                console.error("Error fetching vendors: ", error);
+            });
+
+            // Transactions
+            onSnapshot(collection(db, `artifacts/${appId}/users/${userId}/${collections.transactions}`), (querySnapshot) => {
+                transactions = querySnapshot.docs.map(doc => ({ id: doc.id, data: doc.data() })).sort((a, b) => new Date(b.data.date) - new Date(a.data.date));
+                renderAll();
+            }, (error) => {
+                console.error("Error fetching transactions: ", error);
+            });
+        }
+
+        function renderAll() {
+            if (!isAuthReady) {
+                return;
+            }
+            renderHomePage();
+            renderVendorTable();
+            populateWipChallanDropdown();
+            populateRecChallanDropdown();
+            populateVendorDropdown('outputVendor', 'Cutting');
+            renderTransactionsTable();
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            setupFirebase();
+            document.getElementById('home-tab').addEventListener('click', (e) => openTab(e, 'Home'));
+            document.getElementById('record-output-tab').addEventListener('click', (e) => openTab(e, 'RecordOutput'));
+            document.getElementById('wip-tab').addEventListener('click', (e) => openTab(e, 'WIP'));
+            document.getElementById('record-receiving-tab').addEventListener('click', (e) => openTab(e, 'RecordReceiving'));
+            document.getElementById('manage-vendors-tab').addEventListener('click', (e) => openTab(e, 'ManageVendors'));
+            document.getElementById('transactions-tab').addEventListener('click', (e) => openTab(e, 'Transactions'));
+            document.getElementById('add-output-size-btn').addEventListener('click', () => addSizeField('size-quantity-container'));
+            document.getElementById('add-edit-size-btn').addEventListener('click', () => addSizeField('edit-size-quantity-container'));
+            document.getElementById('sku-search-btn').addEventListener('click', () => {
+                const sku = document.getElementById('sku-search-input').value;
+                if (sku) {
+                    visualizeSkuProgress(sku);
+                }
+            });
+            openTab({ currentTarget: document.getElementById('home-tab') }, 'Home');
+            populateJobTypes('jobTypesContainer');
+            const sizeContainer = document.getElementById('size-quantity-container');
+            DEFAULT_SIZES.forEach(s => createSizeInputField(s, 'size-quantity-container'));
+        });
+    </script>
+</body>
+
+</html>
